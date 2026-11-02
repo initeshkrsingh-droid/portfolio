@@ -25,7 +25,7 @@
   onNavScroll();
 
   // Nav stays visible; highlight the section currently in view
-  const sectionIds = ['top', 'about', 'education', 'experience', 'blog', 'contact'];
+  const sectionIds = ['top', 'about', 'education', 'experience', 'skills', 'blog', 'contact'];
   const navLinks = [...document.querySelectorAll('.nav__links a, .nav__panel a')];
   const setActive = (id) => navLinks.forEach((a) => {
     if (a.getAttribute('href') === `#${id}`) a.setAttribute('aria-current', 'true');
@@ -133,8 +133,8 @@
 
   // 3D tilt + light sheen on cards (mouse/trackpad only)
   if (finePointer && !reduceMotion) {
-    document.querySelectorAll('.stop__card, .post-card, .stat, .pillar').forEach((el) => {
-      const strength = el.classList.contains('stat') || el.classList.contains('pillar') ? 6 : 9;
+    document.querySelectorAll('.stop__card, .post-card, .stat, .pillar, .skill').forEach((el) => {
+      const strength = el.classList.contains('stat') || el.classList.contains('pillar') ? 6 : el.classList.contains('skill') ? 8 : 9;
       el.classList.add('tilt');
       let raf = 0, px = .5, py = .5;
       const paint = () => {
@@ -200,10 +200,11 @@
           </div>
         </div>`;
     } else {
+      postsEl.classList.toggle('posts--three', POSTS.length === 3);
       postsEl.innerHTML = POSTS.map((p, i) => `
         <article class="post-card${POSTS.length === 1 ? ' post-card--solo' : i === 0 ? ' post-card--featured' : ''} reveal is-in">
           <a class="post-card__link" href="#post-${esc(p.slug)}" aria-label="Read: ${esc(p.title)}">
-            ${p.cover ? `<span class="post-card__img"><img src="${esc(p.cover)}" alt="${esc(p.coverAlt || '')}" loading="lazy"></span>` : ''}
+            ${p.cover ? `<span class="post-card__img"><img src="${esc(p.cover)}" alt="${esc(p.coverAlt || '')}" loading="lazy"></span>` : `<span class="post-card__img post-card__img--type stripes" aria-hidden="true"><span class="post-card__mark">&ldquo;</span><span class="post-card__quote">${esc(p.coverQuote || p.title)}</span></span>`}
             <span class="post-card__meta"><span class="post-card__cat">${esc(p.category || 'Story')}</span><time datetime="${esc(p.date)}">${esc(fmtDate(p.date))}</time></span>
             <h3 class="post-card__title">${esc(p.title)}</h3>
             ${p.excerpt ? `<p class="post-card__excerpt">${esc(p.excerpt)}</p>` : ''}
@@ -220,7 +221,7 @@
     readerBody.innerHTML = `
       <p class="reader__meta"><span>${esc(p.category || 'Story')}</span><time datetime="${esc(p.date)}">${esc(fmtDate(p.date))}</time><span>${minutes(p)} min read</span></p>
       <h2 class="reader__title" id="reader-title">${esc(p.title)}</h2>
-      ${p.cover ? `<img class="reader__cover" src="${esc(p.cover)}" alt="${esc(p.coverAlt || '')}">` : ''}
+      ${p.cover ? `<figure class="reader__figure"><img class="reader__cover" src="${esc(p.cover)}" alt="${esc(p.coverAlt || '')}">${p.coverCredit ? `<figcaption>${esc(p.coverCredit)}</figcaption>` : ''}</figure>` : ''}
       ${(p.body || []).map((para) => para.startsWith('## ') ? `<h3>${esc(para.slice(3))}</h3>` : para.startsWith('> ') ? `<blockquote>${esc(para.slice(2))}</blockquote>` : `<p>${esc(para)}</p>`).join('')}
       <p class="reader__sign">&mdash; Nitesh Kumar Singh</p>`;
     lastFocus = document.activeElement;
