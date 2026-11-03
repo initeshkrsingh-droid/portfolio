@@ -424,7 +424,16 @@ a { color: inherit; }
 .cursor.is-hover .cursor__ring { width: 60px; height: 60px; margin: -30px 0 0 -30px; background: rgba(194,0,28,.12); }
 .cursor.is-down .cursor__ring { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
 .has-cursor, .has-cursor a, .has-cursor button { cursor: none; }
-.hero ~ * .cursor__dot { background: var(--red); }
+.cursor__dot { transition: background .25s var(--ease); }
+.cursor__ring { transition: width .3s var(--ease), height .3s var(--ease), margin .3s var(--ease), background .3s var(--ease), border-color .25s var(--ease); }
+/* On red sections: all white */
+.cursor.on-red .cursor__dot { background: #fff; }
+.cursor.on-red .cursor__ring { border-color: #fff; }
+.cursor.on-red.is-hover .cursor__ring { background: rgba(255,255,255,.18); }
+/* On dark sections and photos: white ring, red dot with a white edge */
+.cursor.on-dark .cursor__ring { border-color: rgba(255,255,255,.85); }
+.cursor.on-dark .cursor__dot { box-shadow: 0 0 0 1.5px #fff; }
+.cursor.on-dark.is-hover .cursor__ring { background: rgba(255,255,255,.12); }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 960px) {

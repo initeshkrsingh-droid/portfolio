@@ -167,14 +167,39 @@
       x = e.clientX; y = e.clientY;
       if (x > 0 || y > 0) cursor.classList.add('is-live');
       dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      cursor.classList.toggle('is-hover', !!e.target.closest('a, button, [data-copy], .stop__card, .cert-row, .post-card'));
+      cursor.classList.toggle('is-hover', !!e.target.closest('a, button, [data-copy], .stop__card, .cert-row, .post-card, .skill'));
+      needsTone = true;
     }, { passive: true });
+
+    // Pick a cursor colour that stands out from whatever is underneath it
+    let needsTone = false, tone = '';
+    const surfaceAt = (px, py) => {
+      let el = document.elementFromPoint(px, py);
+      if (!el) return 'light';
+      if (el.closest('.hero__bg, .hero')) return 'dark';           // photo hero
+      if (el.tagName === 'IMG') return 'dark';
+      for (; el && el !== document.documentElement; el = el.parentElement) {
+        const m = getComputedStyle(el).backgroundColor.match(/[\d.]+/g);
+        if (!m) continue;
+        const [r, g, b, a = 1] = m.map(Number);
+        if (a < 0.5) continue;
+        if (r > 140 && g < 90 && b < 90) return 'red';
+        return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 < 0.4 ? 'dark' : 'light';
+      }
+      return 'light';
+    };
+    const applyTone = () => {
+      const t = surfaceAt(x, y);
+      if (t !== tone) { cursor.classList.remove('on-' + tone); cursor.classList.add('on-' + t); tone = t; }
+    };
+    window.addEventListener('scroll', () => { needsTone = true; }, { passive: true });
     window.addEventListener('pointerdown', () => cursor.classList.add('is-down'));
     window.addEventListener('pointerup', () => cursor.classList.remove('is-down'));
     document.documentElement.addEventListener('pointerleave', () => cursor.classList.remove('is-live'));
     const loop = () => {
       rx += (x - rx) * 0.18; ry += (y - ry) * 0.18;
       ring.style.transform = `translate3d(${rx.toFixed(1)}px, ${ry.toFixed(1)}px, 0)`;
+      if (needsTone && x > 0) { needsTone = false; applyTone(); }
       requestAnimationFrame(loop);
     };
     loop();
